@@ -9,6 +9,13 @@ const xss = require('xss-clean');
 const rateLimiter = require('express-rate-limit');
 const hpp = require('hpp');
 
+// Swagger
+const swaggerUI = require('swagger-ui-express');
+const YAML = require('yamljs');
+
+// Load Swagger File
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 const express = require('express');
 const app = express();
 
@@ -47,7 +54,11 @@ app.use(cors());
 // Prevent XSS attacks : <script></script>
 app.use(xss());
 
-app.get('/', (req, res) => res.send('Jobs Api'));
+app.get('/', (req, res) => {
+  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
+});
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // mount routers
 app.use('/api/v1/auth', require('./routes/auth'));
